@@ -1,0 +1,130 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LiveMask Studio</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #10121b;
+      color: #f5f5ff;
+      font-family: Arial, sans-serif;
+    }
+    main { max-width: 600px; margin: auto; }
+    h1 { color: #c9a7ff; }
+    p { color: #c4c6d4; line-height: 1.5; }
+    .panel {
+      background: #1c2030;
+      border: 1px solid #393d52;
+      border-radius: 16px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+    video {
+      display: block;
+      width: 100%;
+      min-height: 220px;
+      background: #080910;
+      border-radius: 12px;
+      object-fit: cover;
+    }
+    button, select {
+      width: 100%;
+      padding: 13px;
+      margin: 7px 0;
+      border-radius: 9px;
+      border: 1px solid #555b75;
+      background: #292e42;
+      color: white;
+      font-size: 16px;
+    }
+    button { background: #7752c9; border: 0; font-weight: bold; }
+    button:disabled { opacity: .5; }
+    label { display: block; margin-top: 14px; }
+    .notice { font-size: 13px; }
+    #status { color: #d4bdff; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>✨ LiveMask Studio</h1>
+  <p>A starter interface for consent-based live video and voice effects.</p>
+
+  <section class="panel">
+    <h2>Camera preview</h2>
+    <video id="camera" autoplay playsinline muted></video>
+    <button id="start">Start camera</button>
+    <button id="stop" disabled>Stop camera</button>
+    <p id="status">Camera is off.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Face effect</h2>
+    <label for="face">Choose a demo effect</label>
+    <select id="face">
+      <option>Original appearance</option>
+      <option>Fantasy avatar (demo only)</option>
+      <option>Cartoon look (demo only)</option>
+    </select>
+
+    <h2>Voice effect</h2>
+    <label for="voice">Choose a demo voice effect</label>
+    <select id="voice">
+      <option>Original voice</option>
+      <option>Lower pitch (not connected yet)</option>
+      <option>Higher pitch (not connected yet)</option>
+    </select>
+    <p class="notice">These selections are interface examples only. Real-time AI face replacement and voice conversion have not been connected.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Consent and privacy</h2>
+    <label>
+      <input type="checkbox" id="consent">
+      I will use only faces and voices I own or have permission to use.
+    </label>
+    <p class="notice">Camera access works only after you grant permission. This demo does not upload or record your camera feed.</p>
+  </section>
+</main>
+
+<script>
+  const video = document.getElementById('camera');
+  const start = document.getElementById('start');
+  const stop = document.getElementById('stop');
+  const status = document.getElementById('status');
+  let stream = null;
+
+  start.addEventListener('click', async () => {
+    if (!document.getElementById('consent').checked) {
+      status.textContent = 'Please confirm consent first.';
+      return;
+    }
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: false
+      });
+      video.srcObject = stream;
+      status.textContent = 'Camera is running on this device.';
+      start.disabled = true;
+      stop.disabled = false;
+    } catch (error) {
+      status.textContent = 'Camera unavailable. Allow camera access and try again.';
+    }
+  });
+
+  stop.addEventListener('click', () => {
+    if (stream) stream.getTracks().forEach(track => track.stop());
+    video.srcObject = null;
+    stream = null;
+    status.textContent = 'Camera is off.';
+    start.disabled = false;
+    stop.disabled = true;
+  });
+</script>
+</body>
+</html>
