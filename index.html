@@ -125,6 +125,19 @@
     start.disabled = false;
     stop.disabled = true;
   });
-</script>
+// LiveMask Studio: real-time visual filters
+const faceEffect = document.getElementById('face');
+
+if (faceEffect) {
+  faceEffect.addEventListener('change', () => {
+    const effects = {
+      'Original appearance': 'none',
+      'Fantasy avatar (demo only)': 'saturate(1.5) hue-rotate(15deg)',
+      'Cartoon look (demo only)': 'contrast(1.4) saturate(1.8)'
+    };
+
+    video.style.filter = effects[faceEffect.value] || 'none';
+  });
+}</script>
 </body>
 </html>
